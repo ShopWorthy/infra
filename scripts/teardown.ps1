@@ -21,15 +21,15 @@ Write-Host " ShopWorthy - Teardown (Windows)"                    -ForegroundColo
 Write-Host "=====================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Determine compose command
+# Determine compose command (prefer standalone docker-compose for Windows compatibility)
 $ComposeCmd = $null
-try {
-    docker compose version 2>&1 | Out-Null
-    $ComposeCmd = "docker compose"
-} catch {
-    if (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {
-        $ComposeCmd = "docker-compose"
-    }
+if (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {
+    $ComposeCmd = "docker-compose"
+} elseif (Get-Command "docker" -ErrorAction SilentlyContinue) {
+    try {
+        $null = docker compose version 2>&1
+        if ($LASTEXITCODE -eq 0) { $ComposeCmd = "docker compose" }
+    } catch {}
 }
 
 if ($ComposeCmd) {

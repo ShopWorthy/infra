@@ -44,21 +44,24 @@ try {
     exit 1
 }
 
-# Check Docker Compose
+# Check Docker Compose (prefer standalone docker-compose for Windows compatibility)
 $ComposeCmd = $null
-try {
-    docker compose version 2>&1 | Out-Null
-    $ComposeCmd = "docker compose"
-    Write-Green "   [ok] Docker Compose (docker compose)"
-} catch {
-    if (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {
-        $ComposeCmd = "docker-compose"
-        Write-Green "   [ok] Docker Compose (docker-compose)"
-    } else {
-        Write-Red "ERROR: Docker Compose is not available."
-        Write-Host "       Install: https://docs.docker.com/compose/install/"
-        exit 1
-    }
+if (Get-Command "docker-compose" -ErrorAction SilentlyContinue) {
+    $ComposeCmd = "docker-compose"
+    Write-Green "   [ok] Docker Compose (docker-compose)"
+} elseif (Get-Command "docker" -ErrorAction SilentlyContinue) {
+    try {
+        $null = docker compose version 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            $ComposeCmd = "docker compose"
+            Write-Green "   [ok] Docker Compose (docker compose)"
+        }
+    } catch {}
+}
+if (-not $ComposeCmd) {
+    Write-Red "ERROR: Docker Compose is not available."
+    Write-Host "       Install: https://docs.docker.com/compose/install/"
+    exit 1
 }
 
 Write-Host ""
@@ -125,13 +128,25 @@ Write-Host ""
 # --- 5. Seed database ---
 Write-Host "==> Seeding databases..."
 
-# Wait for PostgreSQL via psql if available, else skip
+$pgSeeded = $false
 if (Get-Command "psql" -ErrorAction SilentlyContinue) {
     $env:PGPASSWORD = "shopworthy123"
-    psql -h localhost -p 5432 -U shopworthy -d inventory -f "$ScriptDir\init-db.sql" 2>&1 | Out-Null
+    try {
+        psql -h localhost -p 5432 -U shopworthy -d inventory -f "$ScriptDir\init-db.sql" 2>&1 | Out-Null
+        $pgSeeded = $true
+    } catch {}
+}
+if (-not $pgSeeded) {
+    # Run init script inside postgres container (no psql required on host)
+    try {
+        Invoke-Expression "$ComposeCmd exec -T postgres psql -U shopworthy -d inventory -f /docker-entrypoint-initdb.d/init.sql" 2>&1 | Out-Null
+        $pgSeeded = $true
+    } catch {}
+}
+if ($pgSeeded) {
     Write-Green "   PostgreSQL seeded"
 } else {
-    Write-Yellow "   psql not found - PostgreSQL may be seeded via Docker init script"
+    Write-Yellow "   PostgreSQL: schema and seed run on first container start (init-db.sql in container)"
 }
 
 Write-Host ""
