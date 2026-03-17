@@ -23,6 +23,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INFRA_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 PARENT_DIR="$(cd "${INFRA_DIR}/.." && pwd)"
 
+# Ensure sibling scripts are executable (e.g. after clone without execute bits)
+chmod +x "${SCRIPT_DIR}/seed.sh" "${SCRIPT_DIR}/teardown.sh" 2>/dev/null || true
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
