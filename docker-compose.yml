@@ -80,7 +80,6 @@ services:
     environment:
       - GATEWAY_API_KEY=sk_live_shopworthy_gateway_abc123xyz
       - SPRING_PROFILES_ACTIVE=prod
-    privileged: true                                 # Required for gateway network access
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6000/actuator/health"]
       interval: 15s
