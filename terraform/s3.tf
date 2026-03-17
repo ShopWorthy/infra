@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "exports" {
 
 resource "aws_s3_bucket_acl" "exports_acl" {
   bucket = aws_s3_bucket.exports.id
-  acl    = "public-read"  # Intentionally public
+  acl    = "public-read"
 }
 
 # Block public access settings — all disabled

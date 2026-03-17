@@ -88,7 +88,7 @@ resource "aws_db_instance" "shopworthy" {
 
   db_name  = "inventory"
   username = "shopworthy"
-  password = var.db_password  # Hardcoded default in variables.tf
+  password = var.db_password
 
   vpc_security_group_ids = [aws_security_group.shopworthy.id]
   db_subnet_group_name   = aws_db_subnet_group.shopworthy.name

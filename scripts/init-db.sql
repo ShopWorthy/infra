@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS suppliers (
     id SERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     contact_email TEXT,
-    webhook_url TEXT,               -- SSRF vector: user-supplied URL
+    webhook_url TEXT,
     api_key TEXT                    -- stored in plaintext
 );
 

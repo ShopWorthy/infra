@@ -30,11 +30,11 @@ services:
     ports:
       - "4000:4000"
     environment:
-      - JWT_SECRET=shopworthy-secret-2024          # Hardcoded secret
+      - JWT_SECRET=shopworthy-secret-2024
       - DB_PATH=./data/shopworthy.db
       - INVENTORY_URL=http://inventory:5000
       - PAYMENT_URL=http://payments:6000
-      - NODE_ENV=production                         # Misleading env label
+      - NODE_ENV=production
     volumes:
       - ./data:/app/data
     depends_on:
@@ -76,7 +76,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "6000:6000"
-      - "8082:8082"                                  # Actuator port exposed externally
+      - "8082:8082"
     environment:
       - GATEWAY_API_KEY=sk_live_shopworthy_gateway_abc123xyz
       - SPRING_PROFILES_ACTIVE=prod
@@ -114,10 +114,10 @@ services:
     container_name: shopworthy-postgres
     image: postgres:15
     ports:
-      - "5432:5432"                                  # DB exposed externally
+      - "5432:5432"
     environment:
       - POSTGRES_USER=shopworthy
-      - POSTGRES_PASSWORD=shopworthy123              # Weak password, hardcoded
+      - POSTGRES_PASSWORD=shopworthy123
       - POSTGRES_DB=inventory
     volumes:
       - postgres_data:/var/lib/postgresql/data

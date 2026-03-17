@@ -4,7 +4,7 @@
 
 Part of the [ShopWorthy](https://github.com/ShopWorthy) organization.
 
-> **Security Notice:** ShopWorthy is an intentionally vulnerable application for security training. Do not deploy on a public network or with real credentials.
+> **Security Notice:** For training use only. Do not deploy on a public network or with real credentials.
 
 ---
 
@@ -255,17 +255,17 @@ docker compose up --build -d
 ```
 infra/
 ├── docker-compose.yml    # Full local stack (primary entry point)
-├── .env                  # Committed secrets (intentional — see VULNS.md)
+├── .env                  # Environment overrides
 ├── .env.example          # Template env file
 ├── terraform/            # AWS infrastructure
 │   ├── main.tf
-│   ├── variables.tf      # Hardcoded secret defaults (intentional)
+│   ├── variables.tf
 │   ├── outputs.tf
-│   └── s3.tf             # Public S3 bucket (intentional)
+│   └── s3.tf
 ├── k8s/                  # Kubernetes manifests
 │   ├── namespace.yaml
 │   ├── *-deployment.yaml
-│   └── rbac.yaml         # Overly permissive RBAC (intentional)
+│   └── rbac.yaml
 ├── scripts/
 │   ├── setup.sh          # One-command bootstrap (Linux/macOS)
 │   ├── setup.ps1         # One-command bootstrap (Windows)
@@ -273,7 +273,6 @@ infra/
 │   ├── teardown.ps1      # Teardown (Windows)
 │   ├── seed.sh           # Database seeder
 │   └── init-db.sql       # PostgreSQL schema + seed data
-├── VULNS.md              # Vulnerability catalog (instructor-facing)
 └── README.md
 ```
 
