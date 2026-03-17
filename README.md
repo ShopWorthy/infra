@@ -45,9 +45,13 @@ First run takes **5–10 minutes** while Maven, npm, and pip download dependenci
 |---------|-----|
 | Customer Storefront | http://localhost:3000 |
 | Primary API | http://localhost:4000 |
+| API (OpenAPI / Swagger UI) | http://localhost:4000/api-docs |
 | Inventory API | http://localhost:5000 |
+| Inventory (OpenAPI / Swagger UI) | http://localhost:5000/docs |
 | Payments API | http://localhost:6000 |
+| Payments (OpenAPI / Swagger UI) | http://localhost:6000/swagger-ui.html |
 | Admin Panel | http://localhost:8080 |
+| Admin API (OpenAPI / Swagger UI) | http://localhost:8080/admin/api-docs |
 | H2 Console | http://localhost:6000/h2-console |
 | Spring Actuator | http://localhost:6000/actuator |
 | PostgreSQL | localhost:5432 |
