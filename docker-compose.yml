@@ -3,6 +3,7 @@ version: '3.8'
 services:
   frontend:
     container_name: shopworthy-frontend
+    image: shopworthy/frontend:latest
     build:
       context: ../frontend
       dockerfile: Dockerfile
@@ -22,6 +23,7 @@ services:
 
   api:
     container_name: shopworthy-api
+    image: shopworthy/api:latest
     build:
       context: ../api
       dockerfile: Dockerfile
@@ -47,6 +49,7 @@ services:
 
   inventory:
     container_name: shopworthy-inventory
+    image: shopworthy/inventory:latest
     build:
       context: ../inventory
       dockerfile: Dockerfile
@@ -67,6 +70,7 @@ services:
 
   payments:
     container_name: shopworthy-payments
+    image: shopworthy/payments:latest
     build:
       context: ../payments
       dockerfile: Dockerfile
@@ -86,6 +90,7 @@ services:
 
   admin:
     container_name: shopworthy-admin
+    image: shopworthy/admin:latest
     build:
       context: ../admin
       dockerfile: Dockerfile
