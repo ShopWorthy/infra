@@ -84,6 +84,12 @@ if (-not $SkipClone) {
 Write-Host "==> Building and starting all services..."
 Write-Host "    (First build downloads dependencies - this may take 5-10 minutes)"
 Set-Location $InfraDir
+
+# Ensure data directory exists for API volume mount
+if (-not (Test-Path (Join-Path $InfraDir "data"))) {
+    New-Item -ItemType Directory -Path (Join-Path $InfraDir "data") -Force | Out-Null
+}
+
 Invoke-Expression "$ComposeCmd up --build -d"
 Write-Host ""
 

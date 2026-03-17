@@ -90,6 +90,10 @@ fi
 echo "==> Building and starting all services..."
 echo "    (First build downloads dependencies — this may take 5-10 minutes)"
 cd "$INFRA_DIR"
+
+# Ensure data directory exists for API volume mount
+mkdir -p "$INFRA_DIR/data"
+
 $COMPOSE_CMD up --build -d
 echo ""
 
