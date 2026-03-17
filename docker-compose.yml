@@ -29,6 +29,7 @@ services:
       - "4000:4000"
     environment:
       - JWT_SECRET=shopworthy-secret-2024
+      - INTERNAL_API_SECRET=sw-internal-2024-secret
       - DB_PATH=./data/shopworthy.db
       - INVENTORY_URL=http://inventory:5000
       - PAYMENT_URL=http://payments:6000
@@ -95,11 +96,15 @@ services:
       - "8080:8080"
     environment:
       - DATABASE_URL=postgresql://shopworthy:shopworthy123@postgres:5432/inventory
+      - API_URL=http://api:4000
+      - INTERNAL_API_SECRET=sw-internal-2024-secret
       - SECRET_KEY=admin-secret
       - ADMIN_USER=admin
       - ADMIN_PASS=admin
     depends_on:
       postgres:
+        condition: service_healthy
+      api:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/admin/login"]
