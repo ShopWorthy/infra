@@ -5,10 +5,10 @@ services:
     build:
       context: ../frontend
       dockerfile: Dockerfile
+      # Optional: pass VITE_API_URL to point frontend at a specific API (e.g. different host).
+      # Omit for same-origin: use http://localhost:3000 or http://<machine-ip>:3000 — API is proxied.
     ports:
       - "3000:3000"
-    environment:
-      - VITE_API_URL=http://localhost:4000
     depends_on:
       api:
         condition: service_healthy

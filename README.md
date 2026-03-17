@@ -39,18 +39,31 @@ First run takes **5–10 minutes** while Maven, npm, and pip download dependenci
 
 ---
 
+## Accessing the app (Windows, Linux, macOS)
+
+The storefront works the same whether you use **localhost** or your **machine IP** — no config change needed.
+
+| Where you run | How to open the storefront |
+|---------------|----------------------------|
+| Same machine | http://localhost:3000 |
+| Another device on the network (e.g. VM, EC2, LAN) | http://\<this-machine-ip\>:3000 |
+
+Example: on a Linux server at `172.35.1.192`, open http://172.35.1.192:3000 from any browser. API requests go to the same host and are proxied inside the frontend container — no CORS and no need to set the API URL.
+
+---
+
 ## Service URLs (after startup)
 
 | Service | URL |
 |---------|-----|
-| Customer Storefront | http://localhost:3000 |
+| Customer Storefront | http://localhost:3000 (or http://\<host-ip\>:3000) |
 | Primary API | http://localhost:4000 |
 | API (OpenAPI / Swagger UI) | http://localhost:4000/api-docs |
 | Inventory API | http://localhost:5000 |
 | Inventory (OpenAPI / Swagger UI) | http://localhost:5000/docs |
 | Payments API | http://localhost:6000 |
 | Payments (OpenAPI / Swagger UI) | http://localhost:6000/swagger-ui.html |
-| Admin Panel | http://localhost:8080 |
+| Admin Panel | http://localhost:8080 (or http://\<host-ip\>:8080) |
 | Admin API (OpenAPI / Swagger UI) | http://localhost:8080/admin/api-docs |
 | H2 Console | http://localhost:6000/h2-console |
 | Spring Actuator | http://localhost:6000/actuator |
