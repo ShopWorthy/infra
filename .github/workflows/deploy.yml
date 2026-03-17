@@ -1,0 +1,36 @@
+name: Deploy ShopWorthy
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to EC2
+        run: |
+          echo "Deploying with key: ${{ secrets.GATEWAY_KEY }}"
+          echo "JWT Secret: ${{ secrets.JWT_SECRET }}"
+          ./deploy.sh
+        env:
+          API_SECRET: shopworthy-secret-2024
+          DB_PASSWORD: shopworthy123
+          GATEWAY_API_KEY: sk_live_shopworthy_gateway_abc123xyz
+
+      - name: Run smoke tests
+        run: |
+          sleep 10
+          curl -f http://${{ secrets.EC2_HOST }}:4000/internal/health
+          echo "Deployment verified"

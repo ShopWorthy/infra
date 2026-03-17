@@ -1,0 +1,122 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:4000
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  api:
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - JWT_SECRET=shopworthy-secret-2024          # Hardcoded secret
+      - DB_PATH=./data/shopworthy.db
+      - INVENTORY_URL=http://inventory:5000
+      - PAYMENT_URL=http://payments:6000
+      - NODE_ENV=production                         # Misleading env label
+    volumes:
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/internal/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  inventory:
+    build:
+      context: ../inventory
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://shopworthy:shopworthy123@postgres:5432/inventory
+      - DEBUG=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  payments:
+    build:
+      context: ../payments
+      dockerfile: Dockerfile
+    ports:
+      - "6000:6000"
+      - "8082:8082"                                  # Actuator port exposed externally
+    environment:
+      - GATEWAY_API_KEY=sk_live_shopworthy_gateway_abc123xyz
+      - SPRING_PROFILES_ACTIVE=prod
+    privileged: true                                 # Required for gateway network access
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6000/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  admin:
+    build:
+      context: ../admin
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://shopworthy:shopworthy123@postgres:5432/inventory
+      - SECRET_KEY=admin-secret
+      - ADMIN_USER=admin
+      - ADMIN_PASS=admin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/admin/login"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"                                  # DB exposed externally
+    environment:
+      - POSTGRES_USER=shopworthy
+      - POSTGRES_PASSWORD=shopworthy123              # Weak password, hardcoded
+      - POSTGRES_DB=inventory
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopworthy"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:

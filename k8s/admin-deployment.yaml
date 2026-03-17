@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: shopworthy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+    spec:
+      containers:
+        - name: admin
+          image: shopworthy/admin:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://shopworthy:shopworthy123@postgres:5432/inventory"
+            - name: SECRET_KEY
+              value: "admin-secret"
+            - name: ADMIN_USER
+              value: "admin"
+            - name: ADMIN_PASS
+              value: "admin"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  namespace: shopworthy
+spec:
+  selector:
+    app: admin
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: LoadBalancer

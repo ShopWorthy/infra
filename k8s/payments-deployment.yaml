@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments
+  namespace: shopworthy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments
+  template:
+    metadata:
+      labels:
+        app: payments
+    spec:
+      containers:
+        - name: payments
+          image: shopworthy/payments:latest
+          ports:
+            - containerPort: 6000
+          env:
+            - name: GATEWAY_API_KEY
+              value: "sk_live_shopworthy_gateway_abc123xyz"
+          securityContext:
+            privileged: true  # Required for gateway network access
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments
+  namespace: shopworthy
+spec:
+  selector:
+    app: payments
+  ports:
+    - port: 6000
+      targetPort: 6000
+  type: ClusterIP
