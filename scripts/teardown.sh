@@ -41,7 +41,7 @@ fi
 if [ -n "$COMPOSE_CMD" ]; then
     echo "==> Stopping all containers..."
     cd "$INFRA_DIR"
-    $COMPOSE_CMD down -v --remove-orphans
+    $COMPOSE_CMD down -v
     echo -e "   ${GREEN}[ok] Containers stopped and volumes removed${NC}"
 fi
 

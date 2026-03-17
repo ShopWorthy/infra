@@ -35,7 +35,7 @@ try {
 if ($ComposeCmd) {
     Write-Host "==> Stopping all containers..."
     Set-Location $InfraDir
-    Invoke-Expression "$ComposeCmd down -v --remove-orphans"
+    Invoke-Expression "$ComposeCmd down -v"
     Write-Green "   [ok] Containers stopped and volumes removed"
 } else {
     Write-Yellow "WARNING: Docker Compose not found, skipping container teardown"
