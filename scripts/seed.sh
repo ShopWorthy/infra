@@ -25,12 +25,14 @@ until curl -sf "${API_URL}/internal/health" > /dev/null 2>&1; do
 done
 echo "   API is ready."
 
+# Use docker exec so we don't require psql on the host (e.g. minimal EC2)
+POSTGRES_CONTAINER="${POSTGRES_CONTAINER:-shopworthy-postgres}"
 echo "==> Waiting for PostgreSQL to be ready..."
 attempt=0
-until PGPASSWORD=shopworthy123 psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" -c "SELECT 1" > /dev/null 2>&1; do
+until docker exec "$POSTGRES_CONTAINER" psql -U "$PG_USER" -d "$PG_DB" -c "SELECT 1" > /dev/null 2>&1; do
     attempt=$((attempt + 1))
     if [ $attempt -ge $max_attempts ]; then
-        echo "ERROR: PostgreSQL did not become ready in time"
+        echo "ERROR: PostgreSQL did not become ready in time (is $POSTGRES_CONTAINER running?)"
         exit 1
     fi
     echo "   Waiting... (${attempt}/${max_attempts})"
@@ -39,7 +41,7 @@ done
 echo "   PostgreSQL is ready."
 
 echo "==> Seeding PostgreSQL inventory..."
-PGPASSWORD=shopworthy123 psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_USER" -d "$PG_DB" -f "${SCRIPT_DIR}/init-db.sql" > /dev/null 2>&1 || true
+docker exec -i "$POSTGRES_CONTAINER" psql -U "$PG_USER" -d "$PG_DB" < "${SCRIPT_DIR}/init-db.sql" > /dev/null 2>&1 || true
 echo "   PostgreSQL seed complete."
 
 echo "==> Verifying SQLite seed data via API..."
